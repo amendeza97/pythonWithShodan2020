@@ -1,4 +1,5 @@
 import shodan
+import os
 
 class ShodanSearchClient:
     
@@ -39,4 +40,11 @@ class ShodanSearchClient:
             results = api.host(host_ip)
             self.display_device_info(results)
         except shodan.APIError as error:
-            pass
+            raise BaseException(error)
+    
+    def scan_go_ahead_devices(self):
+        self.__assert_api_key()        
+        print('Scanning, please wait')
+        command = 'entropy -b 2 -v --shodan {}'.format(self.API_KEY)
+        result = os.popen(command).read()
+        print(result)

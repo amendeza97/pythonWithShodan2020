@@ -25,6 +25,8 @@ def __assert_args():
     if SCAN_FLAG in sys.argv:
         if len(sys.argv) > 2:
             raise BaseException("Error: execute '--scan' option without another flag")
+        else:
+            return
     complete_params = len(sys.argv) is 5
     complete_flags = IP_FLAG in sys.argv and PORT_FLAG in sys.argv
     if complete_params and complete_flags:
@@ -56,7 +58,7 @@ if __name__ == '__main__':
         api_key = file_reader.read_first_line()
         shodan_search = ShodanSearchClient(api_key)
         if SCAN_FLAG in sys.argv:
-            pass
+            shodan_search.scan_go_ahead_devices()
         else:
             __execute_exploit()
         sys.exit(0)
