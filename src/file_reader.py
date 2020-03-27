@@ -18,6 +18,7 @@ class FileReader:
         if self.path:
             try:
                 self.file.close()
+                self.file = None
             except:
                 raise BaseException('Exception ocurred to close file')
 

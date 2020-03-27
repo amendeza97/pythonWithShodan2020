@@ -1,0 +1,150 @@
+#!/bin/bash
+
+# MIT License
+#
+# Copyright (C) 2019-2020, Entynetproject. All Rights Reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#blue start 
+	BS="-e \033[1;34m[*]\033[0m "
+#color end
+	CE="\033[0m"
+#red start
+	RS="-e \033[1;31m[-]\033[0m "
+#green start
+	GNS="-e \033[1;32m[+]\033[0m "
+
+printf '\033]2;Entropy Toolkit\a'
+
+if [[ "$1" = "-u" || "$1" = "--update" ]]
+then
+if [[ -d /data/data/com.termux ]]
+then
+if [[ -f /data/data/com.termux/files/usr/bin/entropy ]]
+then
+UPD="true"
+else
+UPD="false"
+fi
+else
+if [[ -f /usr/local/bin/entropy ]]
+then
+UPD="true"
+else
+UPD="false"
+fi
+fi
+{
+ASESR="$( curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//' )"
+} &> /dev/null
+if [[ "$ASESR" = "" ]]
+then 
+sleep 1
+echo ""$RS"Download failed!"$CE""
+sleep 1
+exit
+fi
+if [[ $EUID -ne 0 ]]
+then
+sleep 1
+echo ""$RS"Permission denied!"$CE""
+sleep 1
+exit
+fi
+sleep 1
+echo ""$BS"Installing update..."$CE""
+{
+mkdir ~/.entropy
+cp -r ~/entropy/RECHECK ~/.entropy
+rm -rf ~/entropy
+rm /bin/entropy
+rm /usr/local/bin/entropy
+rm /data/data/com.termux/files/usr/bin/entropy
+cd ~
+git clone https://github.com/entynetproject/entropy.git
+if [[ "$UPD" != "true" ]]
+then
+sleep 0
+else
+cd ~/entropy
+chmod +x install.sh
+./install.sh
+fi
+cp -r ~/.entropy/RECHECK ~/entropy
+rm -rf ~/.entropy
+} &> /dev/null
+echo ""$GNS"Successfully updated!"$CE""
+sleep 1
+exit
+fi
+
+if [[ -d ~/entropy ]]
+then
+{
+cd ~/entropy
+mkdir etc/.disabled
+mv entropy etc/.disabled
+mv etc/entropy ~/entropy
+cp etc/.disabled/entropy etc
+rm -rf etc/.disabled
+} &> /dev/null
+chmod +x entropy
+./entropy $1 $2 $3 $4 $5 $6 $7 $8 $9
+{
+cd ~/entropy
+mkdir etc/.disabled
+mv entropy etc/.disabled
+mv etc/entropy ~/entropy
+cp etc/.disabled/entropy etc
+rm -rf etc/.disabled
+} &> /dev/null
+else
+{
+ASESR="$( curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//' )"
+} &> /dev/null
+if [[ "$ASESR" != "" ]]
+then 
+cd ~
+{
+git clone https://github.com/entynetproject/entropy.git
+cd $OLDPWD
+cd ~/entropy
+mkdir etc/.disabled
+mv entropy etc/.disabled
+mv etc/entropy ~/entropy
+cp etc/.disabled/entropy etc
+rm -rf etc/.disabled
+} &> /dev/null
+chmod +x entropy
+./entropy $1 $2 $3 $4 $5 $6 $7 $8 $9
+{
+cd ~/entropy
+mkdir etc/.disabled
+mv entropy etc/.disabled
+mv etc/entropy ~/entropy
+cp etc/.disabled/entropy etc
+rm -rf etc/.disabled
+} &> /dev/null
+else
+cd ~
+sleep 1
+exit
+fi
+fi

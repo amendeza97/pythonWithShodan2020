@@ -1,5 +1,4 @@
 import shodan
-import requests
 
 class ShodanSearchClient:
     
@@ -27,15 +26,17 @@ class ShodanSearchClient:
         print('Postal code: {}'.format(device_info['postal_code']))
         print('Org: {}'.format(device_info['org']))
         print('Hostnames: {}'.format(device_info['hostnames']))
+        print('Asn: {}'.format(device_info['asn']))
         data = device_info['data']
         data = data[0]
-        print('Device type: {}'.format(data['devicetype']))      
+        print('Device type: {}'.format(data['devicetype']))
+        print(data['data'])
 
-    def search_host(self):
+    def search_host(self, host_ip):
         self.__assert_api_key()
         try:
             api = shodan.Shodan(self.API_KEY)
-            results = api.host('213.161.239.5')
+            results = api.host(host_ip)
             self.display_device_info(results)
         except shodan.APIError as error:
             pass
