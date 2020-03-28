@@ -34,7 +34,7 @@ def __assert_args():
         index_port_flag = sys.argv.index(PORT_FLAG)
         params_offset = index_ip_flag - index_port_flag
         flag_is_first_param = index_ip_flag is 1 or index_port_flag is 1
-        if flag_is_first_param and params_offset is 1 or params_offset is -1:
+        if not flag_is_first_param or params_offset is 1 or params_offset is -1:
             __print_help()
             raise BaseException('Bad usage')
     else:
